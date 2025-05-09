@@ -4,17 +4,19 @@
 class Controller
 {
   public:
-	explicit Controller(const uint32_t direction, const uint32_t isrPin);
+	explicit Controller(const uint32_t input_direction, const uint32_t output_direction, const uint32_t isrPin, const uint8_t mask = 0xF0);
 	void Init();
 	void Write(const uint8_t value);
-	void BeginRead();
+	void BeginRead(void (*callback)());
 	uint8_t ReadInput();
 	void EndRead();
+	void OnISR();
 
   private:
-	static void OnISR();
-	static bool isrRaised;
-	static uint8_t lastInput;
-	uint32_t fd = 0;
+	bool isrRaised = false;
+	uint8_t lastInput = 0;
+	uint32_t input_fd = 0;
+	uint32_t output_fd = 0;
 	uint32_t isrPin = 0;
+	uint8_t mask = 0;
 };

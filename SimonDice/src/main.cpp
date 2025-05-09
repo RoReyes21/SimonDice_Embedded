@@ -10,6 +10,7 @@
 #include <wiringPiI2C.h>
 
 volatile bool stopProgram = false;
+Controller player1(0x20, 0x21, 17);
 
 /**
  * @brief Función para la interrupción SIGINT (ctrl + c)
@@ -26,6 +27,8 @@ void onSigInt(int s)
 	}
 }
 
+void PlayerOneCallback() { player1.OnISR(); }
+
 int main()
 {
 	// region Configuración interrupciones Linux.
@@ -38,25 +41,36 @@ int main()
 	// endregion
 
 	wiringPiSetupPinType(WPI_PIN_BCM);
-	Controller player1(0x20, 17);
 
-    std::vector<int> user_sequence;
-    
-    for (size_t i = 0; i < 5; ++i) {
-        uint8_t input = 0;
-        
-        player1.BeginRead();
+	player1.Write(0xFF);
+
+	std::vector<int> user_sequence;
+
+	// player1.BeginRead(PlayerOneCallback);
+	while (true)
+	{
+		uint8_t input = 0;
+
 		while (input == 0)
 		{
-            input = player1.ReadInput();
-        }
-        player1.EndRead();
-        
+			input = player1.ReadInput();
+		}
+
 		player1.Write(input);
 		user_sequence.push_back(input);
-        
-		printf("Read: %u\n", input);
-    }
+
+		// usleep(200000); // Smart delay of 200ms
+		// wait to user release
+		printf("Value: %u\n", input);
+		
+		while (input != 0)
+		{
+			input = player1.ReadInput();
+		}
+
+		player1.Write(0x0); // Reset to 0x0
+	}
+	// player1.EndRead();
 
 	sleep(1);
 	return 0;
