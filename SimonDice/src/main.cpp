@@ -27,8 +27,6 @@ void onSigInt(int s)
 	}
 }
 
-void PlayerOneCallback() { player1.OnISR(); }
-
 int main()
 {
 	// region Configuración interrupciones Linux.
@@ -46,7 +44,6 @@ int main()
 
 	std::vector<int> user_sequence;
 
-	// player1.BeginRead(PlayerOneCallback);
 	while (true)
 	{
 		uint8_t input = 0;
@@ -59,18 +56,15 @@ int main()
 		player1.Write(input);
 		user_sequence.push_back(input);
 
-		// usleep(200000); // Smart delay of 200ms
-		// wait to user release
 		printf("Value: %u\n", input);
-		
+
 		while (input != 0)
 		{
 			input = player1.ReadInput();
 		}
 
-		player1.Write(0x0); // Reset to 0x0
+		player1.Write(0x0);
 	}
-	// player1.EndRead();
 
 	sleep(1);
 	return 0;
