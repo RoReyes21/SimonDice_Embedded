@@ -10,7 +10,7 @@
 #include <wiringPiI2C.h>
 
 volatile bool stopProgram = false;
-Controller player1(0x20, 0x21, 17);
+Controller player1(0x20, 0x21);
 
 /**
  * @brief Función para la interrupción SIGINT (ctrl + c)
@@ -44,7 +44,7 @@ int main()
 
 	std::vector<int> user_sequence;
 
-	while (true)
+	while (!stopProgram)
 	{
 		uint8_t input = 0;
 
@@ -66,6 +66,5 @@ int main()
 		player1.Write(0x0);
 	}
 
-	sleep(1);
 	return 0;
 }

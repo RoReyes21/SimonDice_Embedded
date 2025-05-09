@@ -24,7 +24,6 @@ class Controller
 	uint8_t ReadInput();
 
   private:
-	uint8_t lastInput = 0;
 	uint32_t input_fd = 0;
 	uint32_t output_fd = 0;
 	uint8_t mask = 0;
