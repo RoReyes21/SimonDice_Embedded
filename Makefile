@@ -1,6 +1,6 @@
 CXX := g++
 CXXFLAGS := -Wall -Wextra -std=c++23 -O2
-LD_FLAGS := -lwiringPi
+LD_FLAGS := -lwiringPi -lrpidisplaygl -llgpio
 
 TARGET := SimonDice
 
