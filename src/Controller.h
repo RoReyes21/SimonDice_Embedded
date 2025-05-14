@@ -1,6 +1,8 @@
 #include <cstdint>
 #include <functional>
 
+#ifndef CONTROLLER_H
+
 class Controller
 {
   public:
@@ -28,3 +30,5 @@ class Controller
 	uint32_t output_fd = 0;
 	uint8_t mask = 0;
 };
+
+#endif
