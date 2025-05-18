@@ -19,6 +19,15 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
+test_display: CXXFLAGS += -DTEST_DISPLAY
+test_display: all
+
+test_controller: CXXFLAGS += -DTEST_CONTROLLER
+test_controller: all
+
+test_simon: CXXFLAGS += -DTEST_SIMON_DICE
+test_simon: all
+
 clean:
 	rm -f $(TARGET) $(OBJ)
 	rm -rf $(OBJ_DIR)
