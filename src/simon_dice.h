@@ -7,13 +7,15 @@
 #include <thread>
 #include <chrono>
 
+#include "Controller.h"
+
 class SimonDice {
 
 public:
     SimonDice();
     
     void start_game();
-    bool play_level();
+    bool play_level(Controller* cntrls = nullptr);
     bool check_sequence(const std::vector<int>& userSequence);
     const std::vector<int>& get_secuence() const { return sequence; }
     int get_current_level() const { return current_level; }

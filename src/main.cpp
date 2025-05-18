@@ -1,5 +1,3 @@
-#include "Controller.h"
-#include "Display.h"
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
@@ -12,11 +10,15 @@
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 
+#include "Controller.h"
+#include "Display.h"
+#include "simon_dice.h"
+
 volatile bool stopProgram = false;
 
 Display display;
-
 Controller player1(0x20, 0x21);
+SimonDice game;
 
 /**
  * @brief Función para la interrupción SIGINT (ctrl + c)
@@ -45,6 +47,24 @@ int main()
 	wiringPiSetupPinType(WPI_PIN_BCM);
 
 	std::srand(std::time({}));
+
+#if TEST_SIMON_DICE
+	player1.Write(0xFF);
+
+	std::cout << "Juego iniciado. ¡Sigue la secuencia!" << std::endl;
+    game.initialize_sequence();
+
+    while (game.play_level(&player1)) {
+        if (game.get_current_level() > 10) {
+            std::cout << "¡Felicidades! Has completado todos los niveles." << std::endl;
+            break;
+        }
+    }
+
+    std::cout << "Juego terminado. Nivel alcanzado: " << game.get_current_level() << std::endl;
+
+#endif
+
 
 #if TEST_DISPLAY
 	if (display.SetupDisplay() != 0) return -1;
@@ -86,6 +106,7 @@ int main()
 		}
 
 		player1.Write(0x0);
+		std::this_thread::sleep_for(std::chrono::milliseconds(400));
 	}
 #endif
 	return 0;
