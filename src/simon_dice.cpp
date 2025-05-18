@@ -57,10 +57,3 @@ bool SimonDice::check_sequence(const std::vector<int>& user_sequence) {
     }
     return true;
 }
-
-int main(int argc, char const *argv[])
-{
-    SimonDice game;
-    game.start_game();
-    return 0;
-}
