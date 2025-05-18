@@ -1,6 +1,7 @@
-#include "ST7789_TFT_LCD_RDL.hpp"
-
 #ifndef DISPLAY_H
+#define DISPLAY_H
+
+#include "ST7789_TFT_LCD_RDL.hpp"
 
 enum MENU_OPTIONS
 {
