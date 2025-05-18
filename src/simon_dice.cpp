@@ -19,21 +19,33 @@ void SimonDice::start_game() {
     std::cout << "Juego terminado. Nivel alcanzado: " << current_level << std::endl;
 }   
  
-bool SimonDice::play_level(Controller* cntrls) {
-    add_to_sequence();
+bool SimonDice::play_level(std::shared_ptr<Controller> cntrls, std::shared_ptr<Display> display, bool is_player_1) {
+
+    if (cntrls == nullptr || display == nullptr) {
+        std::cerr << "Error: Controller or Display is null." << std::endl;
+        return false;
+    }
+    
+    if (is_player_1)
+        add_to_sequence();
     
     std::cout << "Nivel " << current_level << ". Memoriza la secuencia." << std::endl;
+	display->DrawInGameCounter(get_current_level() * 10, YELLOW);
 
     for (int i = 0; i < sequence.size(); ++i) {
         if (color_name_map.find(sequence[i]) != color_name_map.end()) {
             std::cout << color_name_map.at(sequence[i]) << std::flush << std::endl;
+            cntrls->write_in_leds(color_output_map.at(sequence[i]));
         } else {
             std::cerr << "Error: Key not found in color_name_map for sequence element " << sequence[i] << std::endl;
             return false;
         }
         std::this_thread::sleep_for(std::chrono::seconds(1));
-        //system("clear");
+		cntrls->write_in_leds(0x0);
+        std::this_thread::sleep_for(std::chrono::milliseconds(350));
     }
+
+	display->DrawInGameCounter(get_current_level() * 10, BLUE);
 
     std::vector<int> user_sequence;
     for (size_t i = 0; i < sequence.size(); ++i) {
@@ -44,7 +56,7 @@ bool SimonDice::play_level(Controller* cntrls) {
             input = cntrls->ReadInput();
         }
         cntrls->write_in_leds(input);
-        user_sequence.push_back(color_number_map.at(input));
+        user_sequence.push_back(color_input_map.at(input));
 
         std::cout << "Valor presionado: " << static_cast<int>(input) << std::flush << std::endl;
 

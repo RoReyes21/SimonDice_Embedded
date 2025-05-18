@@ -8,6 +8,7 @@
 #include <chrono>
 
 #include "Controller.h"
+#include "Display.h"
 
 class SimonDice {
 
@@ -15,7 +16,7 @@ public:
     SimonDice();
     
     void start_game();
-    bool play_level(Controller* cntrls = nullptr);
+    bool play_level(std::shared_ptr<Controller> cntrls = nullptr, std::shared_ptr<Display> display = nullptr, bool is_player_1 = true);
     bool check_sequence(const std::vector<int>& userSequence);
     const std::vector<int>& get_secuence() const { return sequence; }
     int get_current_level() const { return current_level; }

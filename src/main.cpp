@@ -32,6 +32,39 @@ void onSigInt(int s)
 		stopProgram = true;
 }
 
+bool gaming_simon_says(int number_players, std::shared_ptr<SimonDice> game, std::shared_ptr<Display> display, std::shared_ptr<Controller> contrls_p1, std::shared_ptr<Controller> contrls_p2 = nullptr) {
+
+	if (game == nullptr || display == nullptr || contrls_p1 == nullptr) {
+		std::cerr << "Error: Game, Display or Controller is null." << std::endl;
+
+		if (number_players == 2 && contrls_p2 == nullptr)
+			std::cerr << "Error: Second Controller is null." << std::endl;
+
+		return false;
+	}
+
+	std::string print_info = number_players == 1 ? "1P" : "2P";
+	std::cout << "Iniciando juego en modo de " << print_info << "\n";
+
+	game->initialize_sequence();
+
+	do
+	{
+		display->DrawInGameCounter(game->get_current_level() * 10, YELLOW);
+	} while (!stopProgram && game->play_level(contrls_p1, display) && number_players == 1 ? true : game->play_level(contrls_p2, display, false));	
+
+	display->DrawGameOver((game->get_current_level() - 1) * 10);
+
+	if (((game->get_current_level() - 1) * 10) > max_score)
+	{
+		max_score = ((game->get_current_level() - 1) * 10);
+		write_score_file("data/score.txt", max_score);
+		std::cout << "Nuevo record: " << max_score << "\n";
+	}
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+	display->DrawMenu();
+}
+
 int main()
 {
 	struct sigaction sigIntHandler;
@@ -41,26 +74,27 @@ int main()
 	sigemptyset(&sigIntHandler.sa_mask);
 	sigaction(SIGINT, &sigIntHandler, nullptr);
 
-	Display display;
-	Controller contrls_p1(I2C_ADDR_INPUT_P1, I2C_ADDR_OUTPUT_P1);
-	Controller contrls_p2(I2C_ADDR_INPUT_P2, I2C_ADDR_OUTPUT_P2);
-	SimonDice game;
+	std::shared_ptr<Controller> contrls_p1 = std::make_shared<Controller>(I2C_ADDR_INPUT_P1, I2C_ADDR_OUTPUT_P1);
+	std::shared_ptr<Controller> contrls_p2 = std::make_shared<Controller>(I2C_ADDR_INPUT_P2, I2C_ADDR_OUTPUT_P2);
+	std::shared_ptr<Display> display = std::make_shared<Display>();
+	std::shared_ptr<SimonDice> game = std::make_shared<SimonDice>();
+
 	std::srand(std::time({}));
 
 	wiringPiSetupPinType(WPI_PIN_BCM);
 
 #if !defined(TEST_SIMON_DICE) && !defined(TEST_DISPLAY) && !defined(TEST_CONTROLLER)
 
-	contrls_p1.write_in_leds(0xFF);
+	contrls_p1->write_in_leds(0xFF);
 
-	if (display.SetupDisplay() != 0)
+	if (display->SetupDisplay() != 0)
 		return -1;
 
 	max_score = read_score_file("data/score.txt");
 	
-	display.DrawMenu();
+	display->DrawMenu();
 	int current_menu = 0;
-	display.SelectOption(static_cast<MENU_OPTIONS>(current_menu));
+	display->SelectOption(static_cast<MENU_OPTIONS>(current_menu));
 
 	while (!stopProgram)
 	{
@@ -68,21 +102,21 @@ int main()
 		int selection = 0;
 
 		while (input == 0)
-			input = contrls_p1.ReadInput();
+			input = contrls_p1->ReadInput();
 
-		contrls_p1.write_in_leds(input);
+		contrls_p1->write_in_leds(input);
 
 		printf("Value: %u\n", input);
 		selection = static_cast<int>(input);
 
 		while (input != 0)
-			input = contrls_p1.ReadInput();
+			input = contrls_p1->ReadInput();
 		
-		contrls_p1.write_in_leds(0x0);
+		contrls_p1->write_in_leds(0x0);
 
 		if (selection == INPUT_VALUE_YELLOW)
 		{
-			display.DrawGameOver(420); //TODO: Crear funcion para despedirse
+			display->DrawGameOver(420); //TODO: Crear funcion para despedirse
 			stopProgram = true;
 		} 
 		else if (selection == INPUT_VALUE_GREEN)
@@ -90,36 +124,19 @@ int main()
 
 			if (current_menu == SINGLEPLAYER)
 			{
-				std::cout << "Iniciando juego en modo un jugador\n";
-				game.initialize_sequence();
-
-				do
-				{
-					display.DrawInGameCounter(game.get_current_level() * 10, GREEN);
-				} while (game.play_level(&contrls_p1));
-
-				display.DrawGameOver((game.get_current_level() - 1) * 10);
-
-				if (((game.get_current_level() - 1) * 10) > max_score)
-				{
-					max_score = ((game.get_current_level() - 1) * 10);
-					write_score_file("data/score.txt", max_score);
-					std::cout << "Nuevo record: " << max_score << "\n";
-				}
-				std::this_thread::sleep_for(std::chrono::seconds(2));
-				display.DrawMenu();
+				gaming_simon_says(1, game, display, contrls_p1);
 			} 
 			else if (current_menu == MULTIPLAYER)
 			{
-				std::cout << "Iniciando juego en modo multijugador\n";
+				gaming_simon_says(2, game, display, contrls_p1, contrls_p2);
 			} 
 			else if (current_menu == RECORDS)
 			{
 				std::cout << "Mostrando records\n";
 
-				display.DrawInGameCounter(max_score, YELLOW); //TODO: Crear funcion para mostrar el record
+				display->DrawInGameCounter(max_score, YELLOW); //TODO: Crear funcion para mostrar el record
 				std::this_thread::sleep_for(std::chrono::seconds(3));
-				display.DrawMenu();
+				display->DrawMenu();
 			}
 		} 
 		else if (selection == INPUT_VALUE_BLUE)
@@ -131,7 +148,7 @@ int main()
 			current_menu = (current_menu + 1) % 3;
 		}
 
-		display.SelectOption(static_cast<MENU_OPTIONS>(current_menu));
+		display->SelectOption(static_cast<MENU_OPTIONS>(current_menu));
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(400));
 	}
