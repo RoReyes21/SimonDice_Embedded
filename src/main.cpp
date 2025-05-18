@@ -79,22 +79,15 @@ int main()
 		
 		contrls_p1.write_in_leds(0x0);
 
-		switch (selection) //TODO: Quitar switch, y usar mejor if
+		if (selection == INPUT_VALUE_YELLOW)
 		{
-		case INPUT_VALUE_RED:
-			current_menu = (current_menu + 1) % 3;
-			break;
-		case INPUT_VALUE_BLUE:
-			current_menu = (current_menu - 1 + 3) % 3;
-			break;
-		case INPUT_VALUE_YELLOW:
 			display.DrawGameOver(86);
-			// TODO: Implementar e imprimir el menu de adios
-			break;
-		case INPUT_VALUE_GREEN:
-			switch (current_menu)
+		} 
+		else if (selection == INPUT_VALUE_GREEN)
+		{
+
+			if (current_menu == SINGLEPLAYER)
 			{
-			case SINGLEPLAYER:
 				std::cout << "Iniciando juego en modo un jugador\n";
 				game.initialize_sequence();
 
@@ -107,23 +100,23 @@ int main()
 
 				std::this_thread::sleep_for(std::chrono::seconds(2));
 				display.DrawMenu();
-
-				break;
-			case MULTIPLAYER:
+			} 
+			else if (current_menu == MULTIPLAYER)
+			{
 				std::cout << "Iniciando juego en modo multijugador\n";
-				break;
-			case RECORDS:
+			} 
+			else if (current_menu == RECORDS)
+			{
 				std::cout << "Mostrando records\n";
-				break;
-			default:
-				std::cerr << "Opción de menú desconocida.\n";
-				break;
 			}
-			break;
-		default:
-			std::cerr << "Entrada desconocida." << static_cast<int>(selection) << "\n";
-
-			break;
+		} 
+		else if (selection == INPUT_VALUE_BLUE)
+		{
+			current_menu = (current_menu - 1 + 3) % 3;
+		} 
+		else if (selection == INPUT_VALUE_RED)
+		{
+			current_menu = (current_menu + 1) % 3;
 		}
 		
 		display.SelectOption(static_cast<MENU_OPTIONS>(current_menu));
