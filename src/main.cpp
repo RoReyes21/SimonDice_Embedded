@@ -31,10 +31,7 @@ void onSigInt(int s)
 {
 	std::cout << "\rExiting...\n";
 	if (s == SIGINT)
-	{
 		stopProgram = true;
-		exit(1);
-	}
 }
 
 int main()
