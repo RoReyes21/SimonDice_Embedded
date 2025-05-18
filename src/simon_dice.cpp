@@ -1,7 +1,7 @@
 #include "simon_dice.h"
 #include "common.h"
 
-SimonDice::SimonDice() : current_level(1) {
+SimonDice::SimonDice() : current_level(0) {
     srand(static_cast<unsigned int>(time(0)));
 }
 
