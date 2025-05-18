@@ -20,10 +20,6 @@
 volatile bool stopProgram = false;
 int max_score = 0;
 
-Display display;
-Controller contrls_p1(0x20, 0x21);
-SimonDice game;
-
 /**
  * @brief Función para la interrupción SIGINT (ctrl + c)
  * Utilizada solamente para detener el programa.
@@ -45,9 +41,12 @@ int main()
 	sigemptyset(&sigIntHandler.sa_mask);
 	sigaction(SIGINT, &sigIntHandler, nullptr);
 
-	wiringPiSetupPinType(WPI_PIN_BCM);
-
+	Display display;
+	Controller contrls_p1(0x20, 0x21);
+	SimonDice game;
 	std::srand(std::time({}));
+
+	wiringPiSetupPinType(WPI_PIN_BCM);
 
 #if !defined(TEST_SIMON_DICE) && !defined(TEST_DISPLAY) && !defined(TEST_CONTROLLER)
 
