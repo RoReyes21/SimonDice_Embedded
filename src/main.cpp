@@ -15,8 +15,10 @@
 #include "simon_dice.h"
 #include "pins.h"
 #include "common.h"
+#include "utils.h"
 
 volatile bool stopProgram = false;
+int max_score = 0;
 
 Display display;
 Controller contrls_p1(0x20, 0x21);
@@ -54,6 +56,8 @@ int main()
 	if (display.SetupDisplay() != 0)
 		return -1;
 
+	max_score = read_score_file("data/score.txt");
+	
 	display.DrawMenu();
 	int current_menu = 0;
 	display.SelectOption(static_cast<MENU_OPTIONS>(current_menu));
@@ -78,7 +82,8 @@ int main()
 
 		if (selection == INPUT_VALUE_YELLOW)
 		{
-			display.DrawGameOver(86);
+			display.DrawGameOver(420); //TODO: Crear funcion para despedirse
+			stopProgram = true;
 		} 
 		else if (selection == INPUT_VALUE_GREEN)
 		{
@@ -90,11 +95,17 @@ int main()
 
 				do
 				{
-					display.DrawInGameCounter((game.get_current_level() + 1) * 10, GREEN);
+					display.DrawInGameCounter(game.get_current_level() * 10, GREEN);
 				} while (game.play_level(&contrls_p1));
 
-				display.DrawGameOver((game.get_current_level() + 1) * 10);
+				display.DrawGameOver((game.get_current_level() - 1) * 10);
 
+				if (((game.get_current_level() - 1) * 10) > max_score)
+				{
+					max_score = ((game.get_current_level() - 1) * 10);
+					write_score_file("data/score.txt", max_score);
+					std::cout << "Nuevo record: " << max_score << "\n";
+				}
 				std::this_thread::sleep_for(std::chrono::seconds(2));
 				display.DrawMenu();
 			} 
@@ -105,6 +116,10 @@ int main()
 			else if (current_menu == RECORDS)
 			{
 				std::cout << "Mostrando records\n";
+
+				display.DrawInGameCounter(max_score, YELLOW); //TODO: Crear funcion para mostrar el record
+				std::this_thread::sleep_for(std::chrono::seconds(3));
+				display.DrawMenu();
 			}
 		} 
 		else if (selection == INPUT_VALUE_BLUE)
@@ -115,11 +130,13 @@ int main()
 		{
 			current_menu = (current_menu + 1) % 3;
 		}
-		
+
 		display.SelectOption(static_cast<MENU_OPTIONS>(current_menu));
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(400));
 	}
+
+	std::cout << "Fin del programa\n";
 #endif
 
 #if TEST_SIMON_DICE
