@@ -33,7 +33,7 @@ class Display
 	uint16_t RgbTo565(uint16_t r, uint16_t g, uint16_t b);
 	void SelectOption(MENU_OPTIONS option);
 	uint8_t SetupDisplay();
-	void DrawInGameCounter(uint32_t value, uint16_t color);
+	void DrawInGameCounter(uint32_t value, int enum_color);
 	void DrawGameOver(uint32_t score);
 	void DrawMenu();
 

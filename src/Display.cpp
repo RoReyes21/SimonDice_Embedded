@@ -1,4 +1,5 @@
 #include "Display.h"
+#include "common.h"
 
 uint16_t Display::RgbTo565(uint16_t r, uint16_t g, uint16_t b)
 {
@@ -40,8 +41,32 @@ void Display::SelectOption(MENU_OPTIONS option)
 	}
 }
 
-void Display::DrawInGameCounter(uint32_t value, uint16_t color)
+void Display::DrawInGameCounter(uint32_t value, int enum_color)
 {
+	myTFT.fillScreen(0);
+	myTFT.setFont(font_groTeskBig);
+
+	uint16_t color = 0;
+	switch (enum_color)
+	{
+	case YELLOW:
+		color = myTFT.RDLC_YELLOW;
+		break;
+	case GREEN:
+		color = myTFT.RDLC_GREEN;
+		break;
+	case BLUE:
+		color = myTFT.RDLC_BLUE;
+		break;
+	case RED:
+		color = myTFT.RDLC_RED;
+		break;
+	default:
+		color = myTFT.RDLC_WHITE;
+		break;
+	}
+
+	myTFT.fillScreen(myTFT.RDLC_BLACK);
 	char buffer[256];
 
 	myTFT.setFont(font_groTeskBig);
@@ -133,6 +158,7 @@ void Display::DrawMenu()
 	myTFT.print("EXIT");
 }
 
+/*(
 void Display::DemoInGame()
 {
 	#warning Remove in final version
@@ -165,3 +191,4 @@ void Display::DemoInGame()
 		usleep(80000);
 	}
 }
+)*/
