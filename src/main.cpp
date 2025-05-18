@@ -17,7 +17,7 @@
 volatile bool stopProgram = false;
 
 Display display;
-Controller player1(0x20, 0x21);
+Controller contrls_p1(0x20, 0x21);
 SimonDice game;
 
 /**
@@ -49,12 +49,12 @@ int main()
 	std::srand(std::time({}));
 
 #if TEST_SIMON_DICE
-	player1.Write(0xFF);
+	contrls_p1.write_in_leds(0xFF);
 
 	std::cout << "Juego iniciado. ¡Sigue la secuencia!" << std::endl;
     game.initialize_sequence();
 
-    while (game.play_level(&player1)) {
+    while (game.play_level(&contrls_p1)) {
         if (game.get_current_level() > 10) {
             std::cout << "¡Felicidades! Has completado todos los niveles." << std::endl;
             break;
@@ -83,7 +83,7 @@ int main()
 #endif
 
 #if TEST_CONTROLLER
-	player1.Write(0xFF);
+	contrls_p1.write_in_leds(0xFF);
 
 	std::vector<int> user_sequence;
 	while (!stopProgram)
@@ -92,20 +92,20 @@ int main()
 
 		while (input == 0)
 		{
-			input = player1.ReadInput();
+			input = contrls_p1.ReadInput();
 		}
 
-		player1.Write(input);
+		contrls_p1.write_in_leds(input);
 		user_sequence.push_back(input);
 
 		printf("Value: %u\n", input);
 
 		while (input != 0)
 		{
-			input = player1.ReadInput();
+			input = contrls_p1.ReadInput();
 		}
 
-		player1.Write(0x0);
+		contrls_p1.write_in_leds(0x0);
 		std::this_thread::sleep_for(std::chrono::milliseconds(400));
 	}
 #endif

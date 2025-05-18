@@ -12,7 +12,7 @@ Controller::Controller(const uint32_t input_direction, const uint32_t output_dir
 	this->mask = mask;
 }
 
-void Controller::Write(const uint8_t value)
+void Controller::write_in_leds(const uint8_t value)
 {
 	wiringPiI2CWrite(output_fd, value);
 }

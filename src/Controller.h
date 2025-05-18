@@ -17,9 +17,9 @@ class Controller
 	explicit Controller(const uint32_t input_direction, const uint32_t output_direction, const uint8_t mask = 0xF0);
 
 	/**
-	 * @param value Value to write in the outputs I2C controller.
+	 * @param value Value to write in the outputs (leds) I2C controller.
 	 */
-	void Write(const uint8_t value);
+	void write_in_leds(const uint8_t value);
 
 	/**
 	 * @return uint8_t Last I2C controller input.
