@@ -42,7 +42,8 @@ int main()
 	sigaction(SIGINT, &sigIntHandler, nullptr);
 
 	Display display;
-	Controller contrls_p1(0x20, 0x21);
+	Controller contrls_p1(I2C_ADDR_INPUT_P1, I2C_ADDR_OUTPUT_P1);
+	Controller contrls_p2(I2C_ADDR_INPUT_P2, I2C_ADDR_OUTPUT_P2);
 	SimonDice game;
 	std::srand(std::time({}));
 

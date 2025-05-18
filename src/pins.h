@@ -6,4 +6,9 @@
 #define INPUT_VALUE_BLUE    64
 #define INPUT_VALUE_RED     128
 
+#define I2C_ADDR_INPUT_P1   0X20
+#define I2C_ADDR_OUTPUT_P1  0X21
+#define I2C_ADDR_INPUT_P2   0X22
+#define I2C_ADDR_OUTPUT_P2  0X23
+
 #endif
