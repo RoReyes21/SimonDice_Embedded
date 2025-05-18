@@ -15,6 +15,7 @@ class Controller
 	 * @param mask An optional mask value to configure specific bits, defaulting to 0xF0.
 	 */
 	explicit Controller(const uint32_t input_direction, const uint32_t output_direction, const uint8_t mask = 0xF0);
+	~Controller();
 
 	/**
 	 * @param value Value to write in the outputs (leds) I2C controller.
