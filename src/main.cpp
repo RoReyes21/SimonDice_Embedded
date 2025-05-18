@@ -79,7 +79,7 @@ int main()
 		
 		contrls_p1.write_in_leds(0x0);
 
-		switch (selection)
+		switch (selection) //TODO: Quitar switch, y usar mejor if
 		{
 		case INPUT_VALUE_RED:
 			current_menu = (current_menu + 1) % 3;
@@ -96,6 +96,18 @@ int main()
 			{
 			case SINGLEPLAYER:
 				std::cout << "Iniciando juego en modo un jugador\n";
+				game.initialize_sequence();
+
+				do
+				{
+					display.DrawInGameCounter((game.get_current_level() + 1) * 10, GREEN);
+				} while (game.play_level(&contrls_p1));
+
+				display.DrawGameOver((game.get_current_level() + 1) * 10);
+
+				std::this_thread::sleep_for(std::chrono::seconds(2));
+				display.DrawMenu();
+
 				break;
 			case MULTIPLAYER:
 				std::cout << "Iniciando juego en modo multijugador\n";
