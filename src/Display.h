@@ -34,6 +34,7 @@ class Display
 	void SelectOption(MENU_OPTIONS option);
 	uint8_t SetupDisplay();
 	void DrawInGameCounter(uint32_t value, int enum_color);
+	#warning DrawGameOver no se muestra bien
 	void DrawGameOver(uint32_t score);
 	void DrawMenu();
 
