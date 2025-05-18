@@ -1,7 +1,8 @@
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
+
 #include <cstdint>
 #include <functional>
-
-#ifndef CONTROLLER_H
 
 class Controller
 {
