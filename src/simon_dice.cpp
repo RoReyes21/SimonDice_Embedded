@@ -43,7 +43,7 @@ bool SimonDice::play_level(Controller* cntrls) {
         while (input == 0) {
             input = cntrls->ReadInput();
         }
-        cntrls->Write(input);
+        cntrls->write_in_leds(input);
         user_sequence.push_back(color_number_map.at(input));
 
         std::cout << "Valor presionado: " << static_cast<int>(input) << std::flush << std::endl;
@@ -51,7 +51,7 @@ bool SimonDice::play_level(Controller* cntrls) {
         while (input != 0) {
             input = cntrls->ReadInput();
         }
-        cntrls->Write(0x0);
+        cntrls->write_in_leds(0x0);
         std::this_thread::sleep_for(std::chrono::milliseconds(400));
     }
 

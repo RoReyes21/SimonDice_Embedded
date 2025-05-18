@@ -13,6 +13,8 @@
 #include "Controller.h"
 #include "Display.h"
 #include "simon_dice.h"
+#include "pins.h"
+#include "common.h"
 
 volatile bool stopProgram = false;
 
@@ -48,6 +50,76 @@ int main()
 
 	std::srand(std::time({}));
 
+#if !defined(TEST_SIMON_DICE) && !defined(TEST_DISPLAY) && !defined(TEST_CONTROLLER)
+
+	contrls_p1.write_in_leds(0xFF);
+
+	if (display.SetupDisplay() != 0)
+		return -1;
+
+	display.DrawMenu();
+	int current_menu = 0;
+	display.SelectOption(static_cast<MENU_OPTIONS>(current_menu));
+
+	while (!stopProgram)
+	{
+		uint8_t input = 0;
+		int selection = 0;
+
+		while (input == 0)
+			input = contrls_p1.ReadInput();
+
+		contrls_p1.write_in_leds(input);
+
+		printf("Value: %u\n", input);
+		selection = static_cast<int>(input);
+
+		while (input != 0)
+			input = contrls_p1.ReadInput();
+		
+		contrls_p1.write_in_leds(0x0);
+
+		switch (selection)
+		{
+		case INPUT_VALUE_RED:
+			current_menu = (current_menu + 1) % 3;
+			break;
+		case INPUT_VALUE_BLUE:
+			current_menu = (current_menu - 1 + 3) % 3;
+			break;
+		case INPUT_VALUE_YELLOW:
+			display.DrawGameOver(86);
+			// TODO: Implementar e imprimir el menu de adios
+			break;
+		case INPUT_VALUE_GREEN:
+			switch (current_menu)
+			{
+			case SINGLEPLAYER:
+				std::cout << "Iniciando juego en modo un jugador\n";
+				break;
+			case MULTIPLAYER:
+				std::cout << "Iniciando juego en modo multijugador\n";
+				break;
+			case RECORDS:
+				std::cout << "Mostrando records\n";
+				break;
+			default:
+				std::cerr << "Opción de menú desconocida.\n";
+				break;
+			}
+			break;
+		default:
+			std::cerr << "Entrada desconocida." << static_cast<int>(selection) << "\n";
+
+			break;
+		}
+		
+		display.SelectOption(static_cast<MENU_OPTIONS>(current_menu));
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(400));
+	}
+#endif
+
 #if TEST_SIMON_DICE
 	contrls_p1.write_in_leds(0xFF);
 
@@ -64,7 +136,6 @@ int main()
     std::cout << "Juego terminado. Nivel alcanzado: " << game.get_current_level() << std::endl;
 
 #endif
-
 
 #if TEST_DISPLAY
 	if (display.SetupDisplay() != 0) return -1;
