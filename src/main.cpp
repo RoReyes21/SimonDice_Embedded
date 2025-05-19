@@ -50,8 +50,14 @@ bool gaming_simon_says(int number_players, std::shared_ptr<SimonDice> game, std:
 
 	do
 	{
-		display->DrawInGameCounter(game->get_current_level() * 10, YELLOW);
-	} while (!stopProgram && game->play_level(contrls_p1, display) && number_players == 1 ? true : game->play_level(contrls_p2, display, false));	
+		//display->DrawInGameCounter(game->get_current_level() * 10, YELLOW);
+		if (!game->play_level(contrls_p1, display))
+			break;
+
+		if (number_players == 2 && !game->play_level(contrls_p2, display, false))
+			break;
+
+	} while (!stopProgram);	
 
 	display->DrawGameOver((game->get_current_level() - 1) * 10);
 
@@ -63,6 +69,8 @@ bool gaming_simon_says(int number_players, std::shared_ptr<SimonDice> game, std:
 	}
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 	display->DrawMenu();
+
+	return true;
 }
 
 int main()
