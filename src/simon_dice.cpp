@@ -56,7 +56,12 @@ bool SimonDice::play_level(std::shared_ptr<Controller> cntrls, std::shared_ptr<D
             input = cntrls->ReadInput();
         }
         cntrls->write_in_leds(input);
-        user_sequence.push_back(color_input_map.at(input));
+
+        if (color_input_map.find(input) != color_input_map.end()) {
+            user_sequence.push_back(color_input_map.at(input));
+        } else {
+            std::cerr << "Error: input inesperado (" << static_cast<int>(input) << ") no está en color_input_map.\n";
+        }
 
         std::cout << "Valor presionado: " << static_cast<int>(input) << std::flush << std::endl;
 
